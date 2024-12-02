@@ -62,46 +62,35 @@ public class FileOperation {
 
             Parser<?> parser = ParserFabric.createParser(category);
             if (parser != null) {
-                switch (category) {
-                    case "invoice":
-                        InvoiceParser invoiceParser = (InvoiceParser) parser;
-                        List<Invoice> invoices = invoiceParser.parseFiles(files);
-                        double totalInvoiceAmount = 0;
-                        for (Invoice invoice : invoices) {
-                            totalInvoiceAmount += invoice.getInvoiceAmount();
-                        }
-                        totalAmounts.put(category, totalInvoiceAmount);
-                        break;
-
-                    case "bill":
-                        CheckParser checkParser = (CheckParser) parser;
-                        List<Check> checks = checkParser.parseFiles(files);
-                        double totalCheckAmount = 0;
-                        for (Check check : checks) {
-                            totalCheckAmount += check.getCheckAmount();
-                        }
-                        totalAmounts.put(category, totalCheckAmount);
-                        break;
-
-                    case "order":
-                        OrderParser orderParser = (OrderParser) parser;
-                        List<Order> orders = orderParser.parseFiles(files);
-                        double totalOrderAmount = 0;
-                        for (Order order : orders) {
-                            totalOrderAmount += order.getOrderAmount();
-                        }
-                        totalAmounts.put(category, totalOrderAmount);
-                        break;
-
-                    default:
-                        System.err.println("Unknown category: " + category);
-                }
+                double totalAmount = processCategory(parser, category, files);
+                totalAmounts.put(category, totalAmount);
             } else {
                 System.out.println("Parser not found for category: " + category);
             }
         }
 
         createStatistic(totalAmounts);
+    }
+
+    private static double processCategory(Parser<?> parser, String category, List<Path> files) {
+        return switch (category) {
+            case "invoice" -> ((InvoiceParser) parser).parseFiles(files)
+                    .stream()
+                    .mapToDouble(Invoice::getInvoiceAmount)
+                    .sum();
+            case "bill" -> ((CheckParser) parser).parseFiles(files)
+                    .stream()
+                    .mapToDouble(Check::getCheckAmount)
+                    .sum();
+            case "order" -> ((OrderParser) parser).parseFiles(files)
+                    .stream()
+                    .mapToDouble(Order::getOrderAmount)
+                    .sum();
+            default -> {
+                System.err.println("Unknown category: " + category);
+                yield 0;
+            }
+        };
     }
 
     private static void createStatistic(Map<String, Double> totalAmounts) {
