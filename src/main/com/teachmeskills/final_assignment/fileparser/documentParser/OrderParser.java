@@ -1,9 +1,11 @@
-package main.com.teachmeskills.final_assignment.fileparser;
+package main.com.teachmeskills.final_assignment.fileparser.documentParser;
 
+import main.com.teachmeskills.final_assignment.fileparser.BaseParser;
+import main.com.teachmeskills.final_assignment.fileparser.Parser;
 import main.com.teachmeskills.final_assignment.model.Order;
 import java.util.List;
 
-public class OrderParser extends BaseParser<Order> implements Parser<Order>  {
+public class OrderParser extends BaseParser<Order> implements Parser<Order> {
 
     @Override
     protected  Order analyzeTextFromFile(List<String> parsedText) {

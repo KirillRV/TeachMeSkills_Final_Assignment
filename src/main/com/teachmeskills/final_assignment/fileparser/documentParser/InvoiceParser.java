@@ -1,5 +1,7 @@
-package main.com.teachmeskills.final_assignment.fileparser;
+package main.com.teachmeskills.final_assignment.fileparser.documentParser;
 
+import main.com.teachmeskills.final_assignment.fileparser.BaseParser;
+import main.com.teachmeskills.final_assignment.fileparser.Parser;
 import main.com.teachmeskills.final_assignment.model.Invoice;
 import java.util.List;
 
