@@ -2,10 +2,7 @@ package main.com.teachmeskills.final_assignment.utils;
 
 import main.com.teachmeskills.final_assignment.constant.Constants;
 import main.com.teachmeskills.final_assignment.fabric.ParserFabric;
-import main.com.teachmeskills.final_assignment.fileparser.CheckParser;
-import main.com.teachmeskills.final_assignment.fileparser.InvoiceParser;
-import main.com.teachmeskills.final_assignment.fileparser.OrderParser;
-import main.com.teachmeskills.final_assignment.fileparser.Parser;
+import main.com.teachmeskills.final_assignment.fileparser.*;
 import main.com.teachmeskills.final_assignment.model.Check;
 import main.com.teachmeskills.final_assignment.model.Invoice;
 import main.com.teachmeskills.final_assignment.model.Order;
