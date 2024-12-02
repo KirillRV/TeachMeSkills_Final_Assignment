@@ -9,7 +9,7 @@ import java.util.Date;
  * Order #
  * Invoice #
  * Date: 15.01.2023
- *
+ * <p>
  * Bill total amount EURO 102,78
  */
 public class Check {

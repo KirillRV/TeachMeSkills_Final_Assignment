@@ -42,5 +42,4 @@ public class CheckParser implements Parser<Check> {
 
         return new Check(checkAmount);
     }
-
 }

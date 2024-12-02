@@ -11,7 +11,7 @@ public interface Parser<T> {
 
     List<T> parseFiles(List<Path> files);
 
-    static double findAmountInString(String amount){
+    static double findAmountInString(String amount) {
         Pattern pattern = Pattern.compile(Constants.REGEX_EXP_SUM);
         Matcher matcher = pattern.matcher(amount.replace(",", "."));
 

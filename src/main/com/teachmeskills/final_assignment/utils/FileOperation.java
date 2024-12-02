@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,13 +102,12 @@ public class FileOperation {
             return;
         }
 
-        for (Map.Entry<String, Double> entry : totalAmounts.entrySet()) {
-            String category = entry.getKey();
-            double totalAmount = entry.getValue();
+        totalAmounts.forEach((category, totalAmount) -> {
             String formattedValue = String.format("%.2f", totalAmount);
-            List<String> stats = new ArrayList<>();
-            stats.add("Statistics Report for Category: " + category);
-            stats.add("Total Amount: " + formattedValue);
+            List<String> stats = List.of(
+                    "Statistics Report for Category: " + category,
+                    "Total Amount: " + formattedValue
+            );
 
             Path outputPath = Paths.get(statisticsDirectory.toString(), category + "_statistics.txt");
 
@@ -119,6 +117,6 @@ public class FileOperation {
             } catch (IOException e) {
                 System.err.println("Error writing statistics for " + category + ": " + e.getMessage());
             }
-        }
+        });
     }
 }
