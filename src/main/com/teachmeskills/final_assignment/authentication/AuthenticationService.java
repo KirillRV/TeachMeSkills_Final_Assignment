@@ -1,8 +1,8 @@
-package main.com.teachmeskills.final_assignment.auntefication;
+package main.com.teachmeskills.final_assignment.authentication;
 
 import main.com.teachmeskills.final_assignment.exceptions.AuthenticationException;
-import main.com.teachmeskills.final_assignment.auntefication.User;
-import main.com.teachmeskills.final_assignment.auntefication.TFAUtils;
+import main.com.teachmeskills.final_assignment.authentication.User;
+import main.com.teachmeskills.final_assignment.authentication.TFAUtils;
 import java.util.HashMap;
 import java.util.Map;
 

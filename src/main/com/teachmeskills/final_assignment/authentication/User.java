@@ -1,4 +1,4 @@
-package main.com.teachmeskills.final_assignment.auntefication;
+package main.com.teachmeskills.final_assignment.authentication;
 public class User {
     private String username;
     private String password;
