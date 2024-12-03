@@ -1,8 +1,8 @@
 package main.com.teachmeskills.final_assignment.fabric;
 
-import main.com.teachmeskills.final_assignment.fileparser.CheckParser;
-import main.com.teachmeskills.final_assignment.fileparser.InvoiceParser;
-import main.com.teachmeskills.final_assignment.fileparser.OrderParser;
+import main.com.teachmeskills.final_assignment.fileparser.documentParser.CheckParser;
+import main.com.teachmeskills.final_assignment.fileparser.documentParser.InvoiceParser;
+import main.com.teachmeskills.final_assignment.fileparser.documentParser.OrderParser;
 import main.com.teachmeskills.final_assignment.fileparser.Parser;
 
 
