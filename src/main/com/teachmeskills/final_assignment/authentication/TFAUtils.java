@@ -1,4 +1,4 @@
-package main.com.teachmeskills.final_assignment.auntefication;
+package main.com.teachmeskills.final_assignment.authentication;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
