@@ -56,7 +56,6 @@ public class FileOperation {
 
         Map<String, List<Path>> filesMap = classifyFiles(validFiles);
         processFiles(filesMap);
-
     }
 
 
@@ -73,7 +72,7 @@ public class FileOperation {
     private static boolean isValidFile(Path file) {
         String fileName = file.getFileName().toString();
 
-        return fileName.endsWith("txt") && fileName.contains("2024");
+        return fileName.endsWith(FILE_FORMAT) && fileName.contains(FILE_YEAR_TO_PARSE);
     }
 
     private static void moveInvalidFile(Path file) {
@@ -162,6 +161,7 @@ public class FileOperation {
             Logger.logFileError("Error writing statistics " + e.getMessage());
         }
     }
+
     private static boolean isInAllowedDirectory(Path file) {
         Path parent = file.getParent();
         if (parent == null) {
@@ -170,5 +170,4 @@ public class FileOperation {
         String parentFolderName = parent.getFileName().toString().toLowerCase();
         return ALLOWED_DIRECTORIES.contains(parentFolderName);
     }
-
 }
