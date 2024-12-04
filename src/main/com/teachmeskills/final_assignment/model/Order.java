@@ -14,19 +14,9 @@ package main.com.teachmeskills.final_assignment.model;
  */
 public class Order {
 
-    String companyName;
-    String orderNumber;
-    String companyAddress;
     double orderAmount;
 
     public Order(double orderAmount) {
-        this.orderAmount = orderAmount;
-    }
-
-    public Order(String companyName, String orderNumber, String companyAddress, double orderAmount) {
-        this.companyName = companyName;
-        this.orderNumber = orderNumber;
-        this.companyAddress = companyAddress;
         this.orderAmount = orderAmount;
     }
 
