@@ -22,10 +22,22 @@ import static main.com.teachmeskills.final_assignment.constant.Constants.*;
 public class FileOperation {
 
     public static void getFiles(String folderPath) {
+        try {
+            if (folderPath == null || folderPath.isEmpty() || !Files.exists(Paths.get(folderPath))) {
+                Logger.logFileError("Invalid folder path provided: " + folderPath);
+                return;
+            }
+        } catch (Exception e) {
+            Logger.logFileError("Error during folder analyzing: " + e.getMessage());
+            return;
+        }
+
+
         List<Path> txtFiles;
         try (Stream<Path> paths = Files.walk(Paths.get(folderPath))) {
             txtFiles = paths
                     .filter(Files::isRegularFile)
+                    .filter(FileOperation::isInAllowedDirectory)
                     .toList();
         } catch (IOException | RuntimeException e) {
             Logger.logFileError("Error during folder processing: " + e.getMessage());
@@ -44,7 +56,9 @@ public class FileOperation {
 
         Map<String, List<Path>> filesMap = classifyFiles(validFiles);
         processFiles(filesMap);
+
     }
+
 
     public static void ensureDirectoryExists(String fileName) {
         Path filePath = Paths.get(fileName);
@@ -69,7 +83,7 @@ public class FileOperation {
                 Files.createDirectory(targetDir);
             }
             Files.move(file, targetDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            Logger.logFileInfo(file.getFileName().toString() + " has been moved to " + INVALID_FILES_FOLDER);
+            Logger.logFileInfo(file.getFileName() + " has been moved to " + INVALID_FILES_FOLDER);
         } catch (IOException e) {
             Logger.logFileError("Error moving invalid file: " + e.getMessage());
         }
@@ -148,4 +162,13 @@ public class FileOperation {
             Logger.logFileError("Error writing statistics " + e.getMessage());
         }
     }
+    private static boolean isInAllowedDirectory(Path file) {
+        Path parent = file.getParent();
+        if (parent == null) {
+            return false;
+        }
+        String parentFolderName = parent.getFileName().toString().toLowerCase();
+        return ALLOWED_DIRECTORIES.contains(parentFolderName);
+    }
+
 }
