@@ -12,8 +12,8 @@ import static main.com.teachmeskills.final_assignment.utils.FileOperation.ensure
 public class Logger {
 
     public static void logFileError(String message) {
-        ensureDirectoryExists(Constants.ERROR_LOGGER_FILE_NAME);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.ERROR_LOGGER_FILE_NAME
+        ensureDirectoryExists(Constants.ERROR_LOGGER_FILE_PATH);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.ERROR_LOGGER_FILE_PATH
                 + "error_log.txt", true))) {
             writer.write(new Date() + " " + message);
             writer.newLine();
@@ -23,8 +23,8 @@ public class Logger {
     }
 
     public static void logFileInfo(String message) {
-        ensureDirectoryExists(Constants.INFO_LOGGER_FILE_NAME);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.INFO_LOGGER_FILE_NAME
+        ensureDirectoryExists(Constants.INFO_LOGGER_FILE_PATH);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.INFO_LOGGER_FILE_PATH
                 + "info_log.txt", true))) {
             writer.write(new Date() + " " + message);
             writer.newLine();
