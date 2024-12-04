@@ -6,21 +6,18 @@ import main.com.teachmeskills.final_assignment.fileparser.*;
 import main.com.teachmeskills.final_assignment.fileparser.documentParser.CheckParser;
 import main.com.teachmeskills.final_assignment.fileparser.documentParser.InvoiceParser;
 import main.com.teachmeskills.final_assignment.fileparser.documentParser.OrderParser;
+import main.com.teachmeskills.final_assignment.logging.Logger;
 import main.com.teachmeskills.final_assignment.model.Check;
 import main.com.teachmeskills.final_assignment.model.Invoice;
 import main.com.teachmeskills.final_assignment.model.Order;
 
-
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static main.com.teachmeskills.final_assignment.constant.Constants.*;
 
 public class FileOperation {
 
@@ -29,16 +26,53 @@ public class FileOperation {
         try (Stream<Path> paths = Files.walk(Paths.get(folderPath))) {
             txtFiles = paths
                     .filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().endsWith(".txt"))
-                    .filter(path -> path.getFileName().toString().contains("2024"))
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (IOException | RuntimeException e) {
-            System.out.println("Error during folder processing: " + e.getMessage());
+            Logger.logFileError("Error during folder processing: " + e.getMessage());
             return;
         }
 
-        Map<String, List<Path>> filesMap = classifyFiles(txtFiles);
+        List<Path> validFiles = new ArrayList<>();
+
+        for (Path file : txtFiles) {
+            if (isValidFile(file)) {
+                validFiles.add(file);
+            } else {
+                moveInvalidFile(file);
+            }
+        }
+
+        Map<String, List<Path>> filesMap = classifyFiles(validFiles);
         processFiles(filesMap);
+    }
+
+    public static void ensureDirectoryExists(String fileName) {
+        Path filePath = Paths.get(fileName);
+
+        try {
+            Files.createDirectories(filePath);
+        } catch (IOException e) {
+            System.out.println("Error creating log directory: " + e.getMessage());
+        }
+    }
+
+    private static boolean isValidFile(Path file) {
+        String fileName = file.getFileName().toString();
+
+        return fileName.endsWith("txt") && fileName.contains("2024");
+    }
+
+    private static void moveInvalidFile(Path file) {
+        try {
+            Path targetDir = Paths.get(INVALID_FILES_FOLDER);
+            if (!Files.exists(targetDir)) {
+                Files.createDirectory(targetDir);
+            }
+            Files.move(file, targetDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            Logger.logFileInfo(file.getFileName().toString() + " has been moved to " + INVALID_FILES_FOLDER);
+        } catch (IOException e) {
+            Logger.logFileError("Error moving invalid file: " + e.getMessage());
+        }
     }
 
     private static Map<String, List<Path>> classifyFiles(List<Path> files) {
@@ -64,7 +98,7 @@ public class FileOperation {
                 double totalAmount = processCategory(parser, category, files);
                 totalAmounts.put(category, totalAmount);
             } else {
-                System.out.println("Parser not found for category: " + category);
+                Logger.logFileError("Parser not found for category: " + category);
             }
         }
 
@@ -94,29 +128,24 @@ public class FileOperation {
 
     private static void createStatistic(Map<String, Double> totalAmounts) {
 
+        ensureDirectoryExists(Constants.PATH_TO_STATISTICS);
         Path statisticsDirectory = Paths.get(Constants.PATH_TO_STATISTICS);
-        try {
-            Files.createDirectories(statisticsDirectory);
-        } catch (IOException e) {
-            System.err.println("Error creating statistics directory: " + e.getMessage());
-            return;
-        }
 
+        Path outputPath = Paths.get(statisticsDirectory.toString(), "total_statistics.txt");
+
+        List<String> stats = new ArrayList<>();
         totalAmounts.forEach((category, totalAmount) -> {
-            String formattedValue = String.format("%.2f", totalAmount);
-            List<String> stats = List.of(
-                    "Statistics Report for Category: " + category,
-                    "Total Amount: " + formattedValue
-            );
-
-            Path outputPath = Paths.get(statisticsDirectory.toString(), category + "_statistics.txt");
-
-            try {
-                Files.write(outputPath, stats);
-                System.out.println("Statistics saved to: " + outputPath);
-            } catch (IOException e) {
-                System.err.println("Error writing statistics for " + category + ": " + e.getMessage());
-            }
-        });
+                    String formattedValue = String.format("%.2f", totalAmount);
+                    stats.add("Statistics Report for Category: " + category +
+                            "\nTotal amount for " + category + " is " + formattedValue + "\n"
+                    );
+                }
+        );
+        try {
+            Files.write(outputPath, stats);
+            Logger.logFileInfo("Statistic has been successfully created.");
+        } catch (IOException e) {
+            Logger.logFileError("Error writing statistics " + e.getMessage());
+        }
     }
 }
