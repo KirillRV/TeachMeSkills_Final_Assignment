@@ -22,10 +22,16 @@ import static main.com.teachmeskills.final_assignment.constant.Constants.*;
 public class FileOperation {
 
     public static void getFiles(String folderPath) {
-        if (folderPath == null || folderPath.isEmpty() || !Files.exists(Paths.get(folderPath))) {
-            Logger.logFileError("Invalid folder path provided: " + folderPath);
+        try {
+            if (folderPath == null || folderPath.isEmpty() || !Files.exists(Paths.get(folderPath))) {
+                Logger.logFileError("Invalid folder path provided: " + folderPath);
+                return;
+            }
+        } catch (Exception e) {
+            Logger.logFileError("Error during folder analyzing: " + e.getMessage());
             return;
         }
+
 
         List<Path> txtFiles;
         try (Stream<Path> paths = Files.walk(Paths.get(folderPath))) {
@@ -50,6 +56,7 @@ public class FileOperation {
 
         Map<String, List<Path>> filesMap = classifyFiles(validFiles);
         processFiles(filesMap);
+
     }
 
 
@@ -76,7 +83,7 @@ public class FileOperation {
                 Files.createDirectory(targetDir);
             }
             Files.move(file, targetDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            Logger.logFileInfo(file.getFileName().toString() + " has been moved to " + INVALID_FILES_FOLDER);
+            Logger.logFileInfo(file.getFileName() + " has been moved to " + INVALID_FILES_FOLDER);
         } catch (IOException e) {
             Logger.logFileError("Error moving invalid file: " + e.getMessage());
         }
