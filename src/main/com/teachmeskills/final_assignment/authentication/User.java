@@ -21,4 +21,5 @@ public class User {
     public String getSecretKey() {
         return secretKey;
     }
+
 }
