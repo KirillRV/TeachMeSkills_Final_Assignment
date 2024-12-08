@@ -3,13 +3,9 @@ package main.com.teachmeskills.final_assignment.utils;
 import main.com.teachmeskills.final_assignment.constant.Constants;
 import main.com.teachmeskills.final_assignment.fabric.ParserFabric;
 import main.com.teachmeskills.final_assignment.fileparser.*;
-import main.com.teachmeskills.final_assignment.fileparser.documentParser.CheckParser;
-import main.com.teachmeskills.final_assignment.fileparser.documentParser.InvoiceParser;
-import main.com.teachmeskills.final_assignment.fileparser.documentParser.OrderParser;
+import main.com.teachmeskills.final_assignment.fileparser.documentParser.*;
 import main.com.teachmeskills.final_assignment.logging.Logger;
-import main.com.teachmeskills.final_assignment.model.Check;
-import main.com.teachmeskills.final_assignment.model.Invoice;
-import main.com.teachmeskills.final_assignment.model.Order;
+import main.com.teachmeskills.final_assignment.model.*;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -28,10 +24,9 @@ public class FileOperation {
                 return;
             }
         } catch (Exception e) {
-            Logger.logFileError("Error during folder analyzing: " + e.getMessage());
+            Logger.logFileError("Error during folder analyzing: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
             return;
         }
-
 
         List<Path> txtFiles;
         try (Stream<Path> paths = Files.walk(Paths.get(folderPath))) {
@@ -40,7 +35,7 @@ public class FileOperation {
                     .filter(FileOperation::isInAllowedDirectory)
                     .toList();
         } catch (IOException | RuntimeException e) {
-            Logger.logFileError("Error during folder processing: " + e.getMessage());
+            Logger.logFileError("Error during folder processing: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
             return;
         }
 
@@ -55,9 +50,17 @@ public class FileOperation {
         }
 
         Map<String, List<Path>> filesMap = classifyFiles(validFiles);
+
+        if (filesMap.containsKey("unknown")) {
+            List<Path> unknownFiles = filesMap.remove("unknown");
+            if (unknownFiles != null && !unknownFiles.isEmpty()) {
+                for (Path file : unknownFiles) {
+                    moveInvalidFile(file);
+                }
+            }
+        }
         processFiles(filesMap);
     }
-
 
     public static void ensureDirectoryExists(String fileName) {
         Path filePath = Paths.get(fileName);
@@ -65,7 +68,7 @@ public class FileOperation {
         try {
             Files.createDirectories(filePath);
         } catch (IOException e) {
-            System.out.println("Error creating log directory: " + e.getMessage());
+            Logger.logFileError("Error creating log directory: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -82,7 +85,7 @@ public class FileOperation {
                 Files.createDirectory(targetDir);
             }
             Files.move(file, targetDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            Logger.logFileInfo(file.getFileName() + " has been moved to " + INVALID_FILES_FOLDER);
+            Logger.logFileInfo(2,file.getFileName() + " has been moved to " + INVALID_FILES_FOLDER);
         } catch (IOException e) {
             Logger.logFileError("Error moving invalid file: " + e.getMessage());
         }
@@ -119,24 +122,58 @@ public class FileOperation {
     }
 
     private static double processCategory(Parser<?> parser, String category, List<Path> files) {
-        return switch (category) {
-            case "invoice" -> ((InvoiceParser) parser).parseFiles(files)
-                    .stream()
-                    .mapToDouble(Invoice::getInvoiceAmount)
-                    .sum();
-            case "bill" -> ((CheckParser) parser).parseFiles(files)
-                    .stream()
-                    .mapToDouble(Check::getCheckAmount)
-                    .sum();
-            case "order" -> ((OrderParser) parser).parseFiles(files)
-                    .stream()
-                    .mapToDouble(Order::getOrderAmount)
-                    .sum();
-            default -> {
-                System.err.println("Unknown category: " + category);
-                yield 0;
+
+        switch (category) {
+            case "invoice" -> {
+
+                Map<Invoice, Path> invoices = ((InvoiceParser) parser).parseFiles(files);
+
+                invoices.forEach((invoice, file) -> {
+                    if (invoice.getInvoiceAmount() <= 0) {
+                        moveInvalidFile(file);
+                    }
+                });
+
+                return invoices.keySet()
+                        .stream()
+                        .mapToDouble(Invoice::getInvoiceAmount)
+                        .sum();
             }
-        };
+            case "bill" -> {
+                Map<Check, Path> checks = ((CheckParser) parser).parseFiles(files);
+
+                checks.forEach((check, file) -> {
+                    if (check.getCheckAmount() <= 0) {
+                        moveInvalidFile(file);
+                    }
+                });
+
+                return checks.keySet()
+                        .stream()
+                        .mapToDouble(Check::getCheckAmount)
+                        .sum();
+            }
+            case "order" -> {
+                Map<Order, Path> orders = ((OrderParser) parser).parseFiles(files);
+
+                orders.forEach((order, file) -> {
+
+                    if (order.getOrderAmount() <= 0) {
+                        moveInvalidFile(file);
+                    }
+                });
+
+
+                return orders.keySet()
+                        .stream()
+                        .mapToDouble(Order::getOrderAmount)
+                        .sum();
+            }
+            default -> {
+                Logger.logFileError("Unknown category " + category);
+                return 0;
+            }
+        }
     }
 
     private static void createStatistic(Map<String, Double> totalAmounts) {
@@ -156,7 +193,8 @@ public class FileOperation {
         );
         try {
             Files.write(outputPath, stats);
-            Logger.logFileInfo("Statistic has been successfully created.");
+            System.out.println("Statistic has been successfully created to path: " + outputPath);
+            Logger.logFileInfo(1,"Statistic has been successfully created.");
         } catch (IOException e) {
             Logger.logFileError("Error writing statistics " + e.getMessage());
         }
