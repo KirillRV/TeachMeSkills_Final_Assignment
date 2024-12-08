@@ -8,7 +8,7 @@ import java.util.List;
 public class OrderParser extends BaseParser<Order> implements Parser<Order> {
 
     @Override
-    protected  Order analyzeTextFromFile(List<String> parsedText) {
+    protected Order analyzeTextFromFile(List<String> parsedText) {
 
         double orderAmount = 0;
 

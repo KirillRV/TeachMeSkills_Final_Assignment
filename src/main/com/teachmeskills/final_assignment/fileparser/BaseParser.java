@@ -3,14 +3,15 @@ package main.com.teachmeskills.final_assignment.fileparser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseParser<T> implements Parser<T> {
 
     @Override
-    public List<T> parseFiles(List<Path> files) {
-        List<T> parsedObjects = new ArrayList<>();
+    public Map<T, Path> parseFiles(List<Path> files) {
+        Map<T, Path> parsedObjects = new HashMap<>();
 
         for (Path file : files) {
             try {
@@ -18,7 +19,7 @@ public abstract class BaseParser<T> implements Parser<T> {
                 lines.removeIf(String::isBlank);
                 lines.replaceAll(String::trim);
                 T parsedObject = analyzeTextFromFile(lines);
-                parsedObjects.add(parsedObject);
+                parsedObjects.put(parsedObject, file);
             } catch (IOException e) {
                 System.err.println("Error during file reading: " + file.getFileName());
             }

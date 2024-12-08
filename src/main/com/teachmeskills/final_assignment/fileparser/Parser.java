@@ -4,12 +4,13 @@ import main.com.teachmeskills.final_assignment.constant.Constants;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface Parser<T> {
 
-    List<T> parseFiles(List<Path> files);
+    Map<T, Path> parseFiles(List<Path> files);
 
     static double findAmountInString(String amount) {
         Pattern pattern = Pattern.compile(Constants.REGEX_EXP_SUM);
