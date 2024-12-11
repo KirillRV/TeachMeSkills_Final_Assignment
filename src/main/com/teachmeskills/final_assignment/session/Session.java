@@ -2,10 +2,14 @@ package main.com.teachmeskills.final_assignment.session;
 
 import java.time.LocalDateTime;
 
-
 public class Session {
     private String username;
     private LocalDateTime expiryTime;
+
+    public Session(String username, LocalDateTime expiryTime) {
+        this.username = username;
+        this.expiryTime = expiryTime;
+    }
 
     public Session(String username, int sessionDurationMinutes) {
         this.username = username;
@@ -18,5 +22,9 @@ public class Session {
 
     public String getUsername() {
         return username;
+    }
+
+    public LocalDateTime getExpiryTime() {
+        return expiryTime;
     }
 }
