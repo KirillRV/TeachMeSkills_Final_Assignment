@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class PropertiesLoader {
-    private Properties properties = new Properties();
+    private final Properties properties = new Properties();
 
     public PropertiesLoader(String filePath) throws IOException {
         try (FileInputStream input = new FileInputStream(filePath)) {
@@ -14,6 +14,6 @@ public class PropertiesLoader {
     }
 
     public int getSessionDuration() {
-        return Integer.parseInt(properties.getProperty("session.duration", "1")); // default 30 minutes
+        return Integer.parseInt(properties.getProperty("session.duration", "30")); // default 30 minutes
     }
 }
