@@ -51,6 +51,6 @@ This project is designed for processing financial documents (invoices, orders, a
 - PropertiesLoader: Class for loading configurations from a file.
 
 ### utils: Utilities for handling files and folders.
-- FileOperation: Class for file operations, including validation, movement, and parsing.
+- FileService: Class for file operations, including validation, movement, and parsing.
 
 ### MainRunner: Main class for managing the program's execution, initiating authentication, file processing, and report generation.
