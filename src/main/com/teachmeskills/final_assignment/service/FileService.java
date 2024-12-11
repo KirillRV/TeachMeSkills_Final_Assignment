@@ -1,4 +1,4 @@
-package main.com.teachmeskills.final_assignment.utils;
+package main.com.teachmeskills.final_assignment.service;
 
 import main.com.teachmeskills.final_assignment.constant.Constants;
 import main.com.teachmeskills.final_assignment.fabric.ParserFabric;
@@ -15,11 +15,43 @@ import java.util.stream.Stream;
 
 import static main.com.teachmeskills.final_assignment.constant.Constants.*;
 
-public class FileOperation {
+/**
+ * The {@code FileOperation} class is designed to handle various file-related operations,
+ * such as reading, writing, copying, and managing file content.
+ * <p>
+ * This utility class aims to simplify common file handling tasks by providing
+ * reusable and efficient methods to work with files.
+ * </p>
+ *
+ * <p><strong>Features:</strong></p>
+ * <ul>
+ *   <li>File reading and writing capabilities</li>
+ *   <li>File content manipulation</li>
+ *   <li>Utilities for moving files</li>
+ *   <li>Error handling for common file operations</li>
+ * </ul>
+ *
+ * <p><strong>Usage:</strong></p>
+ * Instantiate the class or use its static methods directly to perform operations
+ * on files such as text processing or binary file manipulation, including moving incorrect files
+ * to the corresponding folder.
+ *
+ *
+ * <p>Note: Ensure proper exception handling while using the methods
+ * provided by the {@code FileOperation} class to handle I/O-related issues.
+ * Also, please, pay attention that nested folders are also considered for file processing,
+ * but with specific names: invoices, bills and orders. Other folders will be ignored.
+ * </p>
+ *
+ * @author Rita Amosava
+ * @version 1.0
+ */
+public class FileService {
 
     public static void getFiles(String folderPath) {
+
         try {
-            if (folderPath == null || folderPath.isEmpty() || !Files.exists(Paths.get(folderPath))) {
+            if (folderPath == null || folderPath.trim().replaceAll(" ", "").isEmpty() || !Files.exists(Paths.get(folderPath))) {
                 Logger.logFileError("Invalid folder path provided: " + folderPath);
                 return;
             }
@@ -29,10 +61,10 @@ public class FileOperation {
         }
 
         List<Path> txtFiles;
-        try (Stream<Path> paths = Files.walk(Paths.get(folderPath))) {
+        try (Stream<Path> paths = Files.walk(Paths.get(folderPath), 2)) {
             txtFiles = paths
                     .filter(Files::isRegularFile)
-                    .filter(FileOperation::isInAllowedDirectory)
+                    .filter(FileService::isInAllowedDirectory)
                     .toList();
         } catch (IOException | RuntimeException e) {
             Logger.logFileError("Error during folder processing: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
@@ -41,25 +73,33 @@ public class FileOperation {
 
         List<Path> validFiles = new ArrayList<>();
 
-        for (Path file : txtFiles) {
-            if (isValidFile(file)) {
-                validFiles.add(file);
-            } else {
-                moveInvalidFile(file);
-            }
-        }
-
-        Map<String, List<Path>> filesMap = classifyFiles(validFiles);
-
-        if (filesMap.containsKey("unknown")) {
-            List<Path> unknownFiles = filesMap.remove("unknown");
-            if (unknownFiles != null && !unknownFiles.isEmpty()) {
-                for (Path file : unknownFiles) {
-                    moveInvalidFile(file);
+        if (!txtFiles.isEmpty()) {
+            for (Path file : txtFiles) {
+                Logger.logFileInfo(1, "File processing is started: " + file.getFileName());
+                if (isValidFile(file)) {
+                    validFiles.add(file);
+                    Logger.logFileInfo(1, "File is added to further processing: " + file.getFileName());
+                } else {
+                    moveInvalidFile(file, "File format/year is not valid.");
                 }
             }
+
+            Map<String, List<Path>> filesMap = classifyFiles(validFiles);
+
+            if (filesMap.containsKey("unknown")) {
+                List<Path> unknownFiles = filesMap.remove("unknown");
+                if (unknownFiles != null && !unknownFiles.isEmpty()) {
+                    for (Path file : unknownFiles) {
+                        moveInvalidFile(file, "Incorrect file name.");
+                    }
+                }
+            }
+
+            processFiles(filesMap);
+        } else {
+            System.out.println("No files found in the specified folder.");
+            Logger.logFileInfo(1, "No files found in the specified folder.");
         }
-        processFiles(filesMap);
     }
 
     public static void ensureDirectoryExists(String fileName) {
@@ -67,6 +107,7 @@ public class FileOperation {
 
         try {
             Files.createDirectories(filePath);
+            Logger.logFileInfo(1, "Directory " + filePath.getFileName() + " has been created.");
         } catch (IOException e) {
             Logger.logFileError("Error creating log directory: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
@@ -78,14 +119,14 @@ public class FileOperation {
         return fileName.endsWith(FILE_FORMAT) && fileName.contains(FILE_YEAR_TO_PARSE);
     }
 
-    private static void moveInvalidFile(Path file) {
+    private static void moveInvalidFile(Path file, String reason) {
         try {
+            ensureDirectoryExists(INVALID_FILES_FOLDER);
             Path targetDir = Paths.get(INVALID_FILES_FOLDER);
-            if (!Files.exists(targetDir)) {
-                Files.createDirectory(targetDir);
-            }
+
             Files.move(file, targetDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            Logger.logFileInfo(2,file.getFileName() + " has been moved to " + INVALID_FILES_FOLDER);
+            Logger.logFileInfo(2, file.getFileName() + " has been moved to "
+                    + INVALID_FILES_FOLDER + " folder as invalid file. Reason: " + reason);
         } catch (IOException e) {
             Logger.logFileError("Error moving invalid file: " + e.getMessage());
         }
@@ -130,7 +171,7 @@ public class FileOperation {
 
                 invoices.forEach((invoice, file) -> {
                     if (invoice.getInvoiceAmount() <= 0) {
-                        moveInvalidFile(file);
+                        moveInvalidFile(file, "Invoice amount is not correct or not specified.");
                     }
                 });
 
@@ -144,7 +185,7 @@ public class FileOperation {
 
                 checks.forEach((check, file) -> {
                     if (check.getCheckAmount() <= 0) {
-                        moveInvalidFile(file);
+                        moveInvalidFile(file, "Check amount is not correct or not specified.");
                     }
                 });
 
@@ -159,7 +200,7 @@ public class FileOperation {
                 orders.forEach((order, file) -> {
 
                     if (order.getOrderAmount() <= 0) {
-                        moveInvalidFile(file);
+                        moveInvalidFile(file, "Order amount is not correct or not specified.");
                     }
                 });
 
@@ -194,7 +235,8 @@ public class FileOperation {
         try {
             Files.write(outputPath, stats);
             System.out.println("Statistic has been successfully created to path: " + outputPath);
-            Logger.logFileInfo(1,"Statistic has been successfully created.");
+            Logger.logFileInfo(1, "Statistic has been successfully created: "
+                    + outputPath);
         } catch (IOException e) {
             Logger.logFileError("Error writing statistics " + e.getMessage());
         }
