@@ -1,4 +1,4 @@
-package main.com.teachmeskills.final_assignment.utils;
+package main.com.teachmeskills.final_assignment.service;
 
 import main.com.teachmeskills.final_assignment.constant.Constants;
 import main.com.teachmeskills.final_assignment.fabric.ParserFabric;
@@ -6,7 +6,6 @@ import main.com.teachmeskills.final_assignment.fileparser.*;
 import main.com.teachmeskills.final_assignment.fileparser.documentParser.*;
 import main.com.teachmeskills.final_assignment.logging.Logger;
 import main.com.teachmeskills.final_assignment.model.*;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -47,7 +46,7 @@ import static main.com.teachmeskills.final_assignment.constant.Constants.*;
  * @author Rita Amosava
  * @version 1.0
  */
-public class FileOperation {
+public class FileService {
 
     public static void getFiles(String folderPath) {
 
@@ -65,7 +64,7 @@ public class FileOperation {
         try (Stream<Path> paths = Files.walk(Paths.get(folderPath), 2)) {
             txtFiles = paths
                     .filter(Files::isRegularFile)
-                    .filter(FileOperation::isInAllowedDirectory)
+                    .filter(FileService::isInAllowedDirectory)
                     .toList();
         } catch (IOException | RuntimeException e) {
             Logger.logFileError("Error during folder processing: " + e.getMessage() + Arrays.toString(e.getStackTrace()));

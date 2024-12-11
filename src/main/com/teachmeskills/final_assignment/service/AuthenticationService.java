@@ -1,4 +1,4 @@
-package main.com.teachmeskills.final_assignment.authentication;
+package main.com.teachmeskills.final_assignment.service;
 
 import main.com.teachmeskills.final_assignment.exception.AuthenticationException;
 import main.com.teachmeskills.final_assignment.authentication.User;
@@ -38,6 +38,8 @@ import java.util.Map;
  * @author Kirill R.
  * @version 1.0
  */
+// TODO Кирилл- пересмотреть методы, может лучше статические сделать + вынести в константы поля юзера
+    // TODO Кирилл - решить с Владом на счет дублирования verifyOTP метода (в мейне это validateOTP)
 public class AuthenticationService {
     private Map<String, User> userDatabase = new HashMap<>();
 

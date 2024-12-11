@@ -1,129 +1,132 @@
 package main.com.teachmeskills.final_assignment;
 
 import com.google.zxing.WriterException;
-import main.com.teachmeskills.final_assignment.authentication.AuthenticationService;
+import main.com.teachmeskills.final_assignment.service.AuthenticationService;
 import main.com.teachmeskills.final_assignment.authentication.TFAUtils;
 import main.com.teachmeskills.final_assignment.exception.AuthenticationException;
 import main.com.teachmeskills.final_assignment.logging.Logger;
 import main.com.teachmeskills.final_assignment.session.SessionManager;
-import main.com.teachmeskills.final_assignment.utils.FileOperation;
+import main.com.teachmeskills.final_assignment.service.FileService;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
+// TODO Vlad - Привести в порядок класс `MainRunner` — переместить все ненужные методы в соответствующие сервисы (например, сессий, авторизации и т.д.). Оставить только один статический метод в блоке try-catch.
+
 public class MainRunner {
     private static final AuthenticationService authService = new AuthenticationService();
-    private static final SessionManager sessionManager = new SessionManager(1); // Длительность сессии — 1 минута для тестов
+    private static final SessionManager sessionManager = new SessionManager(1); // Session duration — 1 minute for testing
     private static String username;
     private static String secretKey;
     private static final String SESSION_FILE = "session_data.txt";
 
     public static void main(String[] args) {
-        Logger.logFileInfo(1, "Программа запущена.");
+        Logger.logFileInfo(1, "Program started.");
         Scanner scanner = new Scanner(System.in);
 
         try {
-            // Загрузка данных сессии из файла
+            // Loading session data from file
             loadSessionData();
+            // Sending statistics to AWS
 
             if (username != null && secretKey != null) {
-                Logger.logFileInfo(1, "Сессия найдена для пользователя: " + username);
+                Logger.logFileInfo(1, "Session found for user: " + username);
                 if (sessionManager.isSessionActive(username)) {
-                    // Если сессия активна
+                    // If session is active
                     handleActiveSession(scanner);
                 } else {
-                    // Если сессия истекла
+                    // If session has expired
                     handleExpiredSession(scanner);
                 }
             } else {
-                // Если пользователь заходит впервые
+                // If the user is logging in for the first time
                 handleFirstLogin(scanner);
             }
         } catch (AuthenticationException e) {
-            Logger.logFileError("Ошибка аутентификации: " + e.getMessage());
-            System.out.println("Ошибка аутентификации. Проверьте логин и пароль.");
+            Logger.logFileError("Authentication error: " + e.getMessage());
+            System.out.println("Authentication error. Please check your username and password.");
         } catch (Exception e) {
-            Logger.logFileError("Ошибка: " + e.getMessage());
-            System.out.println("Произошла ошибка. Попробуйте снова.");
+            Logger.logFileError("Error: " + e.getMessage());
+            System.out.println("An error occurred. Please try again.");
         } finally {
-            sessionManager.endSession(username); // Завершаем сессию при завершении программы
+            sessionManager.endSession(username); // Ending the session when the program ends
             scanner.close();
-            Logger.logFileInfo(1, "Программа завершена.");
+            Logger.logFileInfo(1, "Program ended.");
         }
     }
 
     private static void handleActiveSession(Scanner scanner) {
         if (validateOTP(scanner)) {
-            Logger.logFileInfo(1, "Успешный вход для пользователя: " + username);
+            Logger.logFileInfo(1, "Successful login for user: " + username);
             processFolder(scanner);
         } else {
-            Logger.logFileError("Неверный временный пароль.");
-            System.out.println("Неверный временный пароль. Завершение программы.");
+            Logger.logFileError("Invalid temporary password.");
+            System.out.println("Invalid temporary password. Program will terminate.");
         }
     }
 
     private static void handleExpiredSession(Scanner scanner)  {
-        System.out.println("Сессия истекла. Введите временный пароль для обновления:");
+        System.out.println("The session has expired.");
         if (validateOTP(scanner)) {
-            Logger.logFileInfo(1, "Временный пароль подтверждён. Сессия обновлена для пользователя: " + username);
-            sessionManager.createSession(username); // Обновляем сессию
-            saveSessionData(); // Сохраняем данные сессии
+            Logger.logFileInfo(1, "Temporary password confirmed. The session has been updated for user: " + username);
+            sessionManager.createSession(username); // Updating session
+            saveSessionData(); // Saving session data
             processFolder(scanner);
         } else {
-            Logger.logFileError("Неверный временный пароль.");
-            System.out.println("Неверный временный пароль. Завершение программы.");
+            Logger.logFileError("Invalid temporary password.");
+            System.out.println("Invalid temporary password. Program will terminate.");
         }
     }
 
     private static void handleFirstLogin(Scanner scanner) throws IOException, WriterException, AuthenticationException {
-        System.out.println("Введите логин:");
+        System.out.println("Enter username:");
         username = scanner.nextLine();
 
-        System.out.println("Введите пароль:");
+        System.out.println("Enter password:");
         String password = scanner.nextLine();
 
         if (authService.login(username, password)) {
-            Logger.logFileInfo(1, "Успешная аутентификация для пользователя: " + username);
-            System.out.println("Успешный вход!");
+            Logger.logFileInfo(1, "Successful authentication for user: " + username);
+            System.out.println("Login successful!");
 
-            // Генерация секретного ключа и QR-кода
+            // Generating a secret key and QR code
             secretKey = TFAUtils.generateSecretKey();
             String qrCodeData = TFAUtils.getGoogleAuthenticatorBarCode(secretKey, username, "TeachMeSkills");
             TFAUtils.createQRCode(qrCodeData, "qr_code.png", 400, 400);
-            Logger.logFileInfo(1, "QR-код создан для пользователя: " + username);
-            System.out.println("QR-код создан. Отсканируйте его и введите временный пароль.");
+            Logger.logFileInfo(1, "QR code created for user: " + username);
+            System.out.println("QR code created. Scan it and enter the temporary password.");
             if (validateOTP(scanner)) {
-                Logger.logFileInfo(1, "Временный пароль подтверждён для пользователя: " + username);
-                sessionManager.createSession(username); // Активируем сессию
-                saveSessionData(); // Сохраняем данные сессии
+                Logger.logFileInfo(1, "Temporary password confirmed for user: " + username);
+                sessionManager.createSession(username); // Activating session
+                saveSessionData(); // Saving session data
                 processFolder(scanner);
             } else {
-                Logger.logFileError("Неверный временный пароль.");
-                System.out.println("Неверный временный пароль. Завершение программы.");
+                Logger.logFileError("Invalid temporary password.");
+                System.out.println("Invalid temporary password. Program will terminate.");
             }
         } else {
-            throw new AuthenticationException("Неверный логин или пароль.");
+            throw new AuthenticationException("Invalid username or password.");
         }
     }
 
     private static boolean validateOTP(Scanner scanner) {
-        System.out.println("Введите временный пароль:");
+        System.out.println("Enter the temporary password:");
         String tempCode = scanner.nextLine();
         return TFAUtils.getTOTPCode(secretKey).equals(tempCode);
     }
-
+    // TODO Vlad - Вызвать метод отправки статистики AWS здесь после вызова `getFiles` и проверить, что статистика существует.
     private static void processFolder(Scanner scanner) {
-        System.out.println("Введите путь до папки с файлами:");
+        System.out.println("Enter the path to the folder with files:");
         String folderPath = scanner.nextLine();
-        FileOperation.getFiles(folderPath);
-        Logger.logFileInfo(1, "Обработка файлов завершена.");
+        FileService.getFiles(folderPath);
+        Logger.logFileInfo(1, "File processing completed.");
     }
 
     private static void loadSessionData() {
         File file = new File(SESSION_FILE);
         if (!file.exists()) {
-            Logger.logFileInfo(1, "Файл сессии отсутствует. Первый вход.");
+            Logger.logFileInfo(1, "Session file does not exist. First login.");
             return;
         }
 
@@ -133,7 +136,7 @@ public class MainRunner {
             LocalDateTime expiryTime = LocalDateTime.parse(reader.readLine());
             sessionManager.createSession(username, expiryTime);
         } catch (IOException e) {
-            Logger.logFileError("Ошибка чтения данных сессии: " + e.getMessage());
+            Logger.logFileError("Error reading session data: " + e.getMessage());
         }
     }
 
@@ -142,9 +145,9 @@ public class MainRunner {
             writer.write(username + "\n");
             writer.write(secretKey + "\n");
             writer.write(sessionManager.getSessionExpiry(username).toString() + "\n");
-            Logger.logFileInfo(1, "Данные сессии сохранены.");
+            Logger.logFileInfo(1, "Session data saved.");
         } catch (IOException e) {
-            Logger.logFileError("Ошибка сохранения данных сессии: " + e.getMessage());
+            Logger.logFileError("Error saving session data: " + e.getMessage());
         }
     }
 }
