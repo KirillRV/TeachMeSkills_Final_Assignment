@@ -14,6 +14,6 @@ public class PropertiesLoader {
     }
 
     public int getSessionDuration() {
-        return Integer.parseInt(properties.getProperty("session.duration", "30")); // default 30 minutes
+        return Integer.parseInt(properties.getProperty("session.duration", "1")); // default 30 minutes
     }
 }
