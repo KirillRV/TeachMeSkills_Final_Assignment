@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import static main.com.teachmeskills.final_assignment.constant.Constants.*;
 
 /**
- * The {@code FileOperation} class is designed to handle various file-related operations,
+ * The {@code FileService} class is designed to handle various file-related operations,
  * such as reading, writing, copying, and managing file content.
  * <p>
  * This utility class aims to simplify common file handling tasks by providing
@@ -38,7 +38,7 @@ import static main.com.teachmeskills.final_assignment.constant.Constants.*;
  *
  *
  * <p>Note: Ensure proper exception handling while using the methods
- * provided by the {@code FileOperation} class to handle I/O-related issues.
+ * provided by the {@code FileService} class to handle I/O-related issues.
  * Also, please, pay attention that nested folders are also considered for file processing,
  * but with specific names: invoices, bills and orders. Other folders will be ignored.
  * </p>
