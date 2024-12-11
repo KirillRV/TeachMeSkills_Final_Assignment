@@ -28,20 +28,18 @@ public class AWSTesterS3 {
 
         AwsCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 
-        PutObjectResponse response;
-        try (S3Client s3Client = S3Client
+        S3Client s3Client = S3Client
                 .builder()
                 .region(Region.of(regionName))
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .build()) {
+                .build();
 
-            PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(key)
-                    .build();
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
 
-            response = s3Client.putObject(request, Path.of(file.toURI()));
-        }
+        PutObjectResponse response = s3Client.putObject(request, Path.of(file.toURI()) );
         System.out.println(response.eTag());
     }
 
