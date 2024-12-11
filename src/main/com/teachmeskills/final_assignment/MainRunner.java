@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Scanner;
 
 // TODO Vlad - Привести в порядок класс `MainRunner` — переместить все ненужные методы в соответствующие сервисы (например, сессий, авторизации и т.д.). Оставить только один статический метод в блоке try-catch.
+// TODO Vlad - посмотреть на username и тд и вытягивать дату из сервиса Кирилла, а не создавать тут переменные
 
 public class MainRunner {
     private static final AuthenticationService authService = new AuthenticationService();
