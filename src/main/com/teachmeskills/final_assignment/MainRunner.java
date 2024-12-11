@@ -1,5 +1,6 @@
 package main.com.teachmeskills.final_assignment;
 
+import main.com.teachmeskills.final_assignment.сonfigLoader.ConfigLoader;
 import com.google.zxing.WriterException;
 import main.com.teachmeskills.final_assignment.authentication.AuthenticationService;
 import main.com.teachmeskills.final_assignment.authentication.TFAUtils;
@@ -14,7 +15,7 @@ import java.util.Scanner;
 
 public class MainRunner {
     private static final AuthenticationService authService = new AuthenticationService();
-    private static final SessionManager sessionManager = new SessionManager(1); // Длительность сессии — 1 минута для тестов
+    private static final SessionManager sessionManager = new SessionManager(ConfigLoader.getIntProperty("session.duration" , 30)); // Длительность сессии — 1 минута для тестов
     private static String username;
     private static String secretKey;
     private static final String SESSION_FILE = "session_data.txt";

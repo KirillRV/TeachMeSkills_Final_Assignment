@@ -20,7 +20,7 @@ public class AWSTesterS3 {
         String regionName = "eu-north-1";
 
         // TODO в кавычки вставить название файла с расширением
-        String key = "total.statistics.txt";
+        String key = "total_statistics.txt";
         // TODO полный путь к файлу
         File file = new File("C:\\Users\\user\\IdeaProjects\\TeachMeSkills_Final_Assignment\\src\\main\\resources\\statistics\\total_statistics.txt");
 
