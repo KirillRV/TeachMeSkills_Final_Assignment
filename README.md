@@ -1,66 +1,56 @@
 # TeachMeSkills_Final_Assignment
 
-## Общее описание :
+## General Description:
 
-Этот проект предназначен для обработки финансовых документов (инвойсов, ордеров и чеков), анализа текстовых файлов, вычисления суммарного оборота и генерации отчетов. Программа поддерживает двухфакторную аутентификацию (TFA) с использованием OTP и QR-кодов и интегрируется с Amazon S3 для загрузки статистики.
+This project is designed for processing financial documents (invoices, orders, and receipts), analyzing text files, calculating total turnover, and generating reports. The program supports two-factor authentication (TFA) using OTP and QR codes and integrates with Amazon S3 for uploading statistics.
 
-## Основные функции:
+## Main Features:
 
-Авторизация с использованием логина, пароля и OTP.
-Обработка текстовых файлов (инвойсы, ордера, чеки).
-Генерация статистики по суммарному обороту.
-Создание отчетов и загрузка их в облачное хранилище Amazon S3.
-Логирование ошибок и информации о процессе работы.
+- Authentication using login, password, and OTP.
+- Processing text files (invoices, orders, receipts).
+- Generating turnover statistics.
+- Creating reports and uploading them to Amazon S3 cloud storage.
+- Logging errors and process-related information.
 
-## Структура проекта :
+## Project Structure:
 
-### authentication: Пакет для авторизации и двухфакторной аутентификации.
--AuthenticationService: Сервис для выполнения логина и проверки OTP.
+### authentication: Package for authentication and two-factor authentication.
+- AuthenticationService: Service for login and OTP verification.
+- TFAUtils: Utility classes for generating secret keys and QR codes.
+- User: Class representing a user.
 
--TFAUtils: Утилитные классы для генерации секретных ключей и QR-кодов.
+### constant: Package for storing constants.
+- Constants: Class for storing all constants (e.g., folder paths, file formats, string templates, etc.).
 
--User: Класс для представления пользователя.
+### exception: Package for custom exceptions.
+- AuthenticationException: Exception for handling authentication errors.
 
-### constant: Пакет для хранения констант.
--Constants:Класс для хранения всех констант (например, путей к папкам, форматов файлов, строковых шаблонов и т. д.).
+### fabric: Package for creating parsers through a factory.
+- ParserFabric: Factory for creating parsers depending on the document type.
 
-### exception: Пакет для пользовательских исключений.
--AuthenticationException: Исключение для обработки ошибок аутентификации.
+### fileparser: Package for parsing financial documents.
+- Parser: Interface for parsers.
+- BaseParser: Abstract class for basic parsing operations.
 
-### fabric: Пакет для создания парсеров через фабрику.
--ParserFabric: Фабрика для создания парсеров в зависимости от типа документа.
+### documentParser: Package for specific document parsers.
+- CheckParser: Parser for receipts.
+- InvoiceParser: Parser for invoices.
+- OrderParser: Parser for orders.
 
-### fileparser: Пакет для парсинга финансовых документов.
--Parser: Интерфейс для парсеров.
+### logging: Package for logging information and errors.
+- Logger: Class for logging messages to files.
 
--BaseParser: Абстрактный класс для базовых операций парсинга.
+### model: Package with data models representing documents.
+- Check: Class representing receipt data.
+- Invoice: Class representing invoice data.
+- Order: Class representing order data.
 
-### documentParser: Пакет для конкретных парсеров документов.
--CheckParser: Парсер для чеков.
+### session: Package for managing user sessions.
+- SessionManager: Session manager for active sessions.
+- Session: Class representing a user session.
+- PropertiesLoader: Class for loading configurations from a file.
 
--InvoiceParser: Парсер для инвойсов.
+### utils: Utilities for handling files and folders.
+- FileService: Class for file operations, including validation, movement, and parsing.
 
--OrderParser: Парсер для ордеров.
-
-### logging: Пакет для логирования информации и ошибок.
--Logger: Класс для записи логов в файлы.
-
-### model: Пакет с моделями данных для представления документов.
--Check: Класс для представления данных чека.
-
--Invoice: Класс для представления данных инвойса.
-
--Order: Класс для представления данных ордера.
-
-### session: Пакет для работы с сессиями пользователей.
--SessionManager: Менеджер сессий для управления активными сессиями.
-
--Session: Класс для представления сессии пользователя.
-
--PropertiesLoader: Класс для загрузки конфигурации из файла.
-
-### utils: Утилиты для работы с файлами и папками.
--FileOperation: Класс для обработки файлов, включая их проверку, перемещение и парсинг.
-
-### MainRunner: Главный класс для управления запуском программы, инициирующий процесс авторизации, обработки файлов и генерации отчетов.
-
+### MainRunner: Main class for managing the program's execution, initiating authentication, file processing, and report generation.
