@@ -32,7 +32,7 @@ public class PropertiesLoader {
     public static void main(String[] args) {
         try {
             // Укажите путь к вашему файлу session.properties
-            String filePath = "src/resources/session.properties";
+            String filePath = "session.properties";
 
             // Создаем объект PropertiesLoader
             PropertiesLoader loader = new PropertiesLoader(filePath);
