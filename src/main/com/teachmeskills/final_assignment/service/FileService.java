@@ -233,7 +233,7 @@ public class FileService {
         ensureDirectoryExists(Constants.PATH_TO_STATISTICS);
         Path statisticsDirectory = Paths.get(Constants.PATH_TO_STATISTICS);
 
-        Path outputPath = Paths.get(statisticsDirectory.toString(), "total_statistics.txt");
+        Path outputPath = Paths.get(statisticsDirectory.toString(), STATISTICS_FILE_NAME);
 
         List<String> stats = new ArrayList<>();
         totalAmounts.forEach((category, totalAmount) -> {
