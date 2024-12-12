@@ -2,7 +2,7 @@ package main.com.teachmeskills.final_assignment.fileparser.documentParser;
 
 import main.com.teachmeskills.final_assignment.fileparser.BaseParser;
 import main.com.teachmeskills.final_assignment.fileparser.Parser;
-import main.com.teachmeskills.final_assignment.model.Invoice;
+import main.com.teachmeskills.final_assignment.model.document.Invoice;
 import java.util.List;
 
 public class InvoiceParser extends BaseParser<Invoice> implements Parser<Invoice> {

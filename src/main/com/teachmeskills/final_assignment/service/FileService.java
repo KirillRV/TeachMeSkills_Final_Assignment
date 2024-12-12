@@ -1,11 +1,14 @@
 package main.com.teachmeskills.final_assignment.service;
 
+import main.com.teachmeskills.final_assignment.amazons3.AWSTesterS3;
 import main.com.teachmeskills.final_assignment.constant.Constants;
 import main.com.teachmeskills.final_assignment.fabric.ParserFabric;
 import main.com.teachmeskills.final_assignment.fileparser.*;
 import main.com.teachmeskills.final_assignment.fileparser.documentParser.*;
 import main.com.teachmeskills.final_assignment.logging.Logger;
-import main.com.teachmeskills.final_assignment.model.*;
+import main.com.teachmeskills.final_assignment.model.document.Check;
+import main.com.teachmeskills.final_assignment.model.document.Invoice;
+import main.com.teachmeskills.final_assignment.model.document.Order;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -48,7 +51,15 @@ import static main.com.teachmeskills.final_assignment.constant.Constants.*;
  */
 public class FileService {
 
-    public static void getFiles(String folderPath) {
+    public static void processFolder(Scanner scanner) {
+        System.out.println("Enter the path to the folder with files:");
+        String folderPath = scanner.nextLine();
+        FileService.getFiles(folderPath);
+        AWSTesterS3.uploadFileToAWS();
+        Logger.logFileInfo(1, "File processing completed.");
+    }
+
+    private static void getFiles(String folderPath) {
 
         try {
             if (folderPath == null || folderPath.trim().replaceAll(" ", "").isEmpty() || !Files.exists(Paths.get(folderPath))) {
