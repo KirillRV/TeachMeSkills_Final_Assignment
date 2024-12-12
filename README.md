@@ -7,7 +7,7 @@ This project is designed for processing financial documents (invoices, orders, a
 ## Main Features:
 
 - Authentication using login, password, and OTP.
-- Processing text files (invoices, orders, receipts).
+- Processing text files (invoices, orders, bills).
 - Generating turnover statistics.
 - Creating reports and uploading them to Amazon S3 cloud storage.
 - Logging errors and process-related information.
