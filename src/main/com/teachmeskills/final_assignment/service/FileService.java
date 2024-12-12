@@ -64,6 +64,7 @@ public class FileService {
         try {
             if (folderPath == null || folderPath.trim().replaceAll(" ", "").isEmpty() || !Files.exists(Paths.get(folderPath))) {
                 Logger.logFileError("Invalid folder path provided: " + folderPath);
+                System.out.println("Invalid folder path provided. Application will be terminated.");
                 return;
             }
         } catch (Exception e) {
