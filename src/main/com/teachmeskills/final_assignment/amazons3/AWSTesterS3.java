@@ -11,8 +11,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import java.io.File;
 import java.nio.file.Path;
 
-public class AWSTesterS3 {
+import static main.com.teachmeskills.final_assignment.constant.Constants.PATH_TO_STATISTICS;
 
+public class AWSTesterS3 {
+ // TODO Vlad - сделать метод не main и вызвать его в processFolder методе после getFiles, также в проперти файл перенести все ключи и тд
     public static void main(String[] args) {
         String accessKey = "AKIAWQUOZ3GRVBUIJUIZ";
         String secretKey = "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";
@@ -22,7 +24,7 @@ public class AWSTesterS3 {
         // TODO в кавычки вставить название файла с расширением
         String key = "total_statistics.txt";
         // TODO полный путь к файлу
-        File file = new File("C:\\Users\\user\\IdeaProjects\\TeachMeSkills_Final_Assignment\\src\\main\\resources\\statistics\\total_statistics.txt");
+        File file = new File(PATH_TO_STATISTICS + key);
 
         AwsCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 
@@ -38,6 +40,7 @@ public class AWSTesterS3 {
                 .build();
 
         PutObjectResponse response = s3Client.putObject(request, Path.of(file.toURI()) );
+        System.out.println(response.eTag());
     }
 
 }
