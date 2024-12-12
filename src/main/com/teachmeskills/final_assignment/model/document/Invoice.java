@@ -1,4 +1,4 @@
-package main.com.teachmeskills.final_assignment.model;
+package main.com.teachmeskills.final_assignment.model.document;
 
 /**
  * INVOICE
