@@ -53,4 +53,5 @@ This project is designed for processing financial documents (invoices, orders, a
 ### service: Utilities for handling files and folders.
 - FileService: Class for file operations, including validation, movement, and parsing.
 
-### MainRunner: Main class for managing the program's execution, initiating authentication, file processing, and report generation.
+### MainRunner: 
+- Main class for managing the program's execution, initiating authentication, file processing, and report generation.
