@@ -41,7 +41,7 @@ This project is designed for processing financial documents (invoices, orders, a
 - Logger: Class for logging messages to files.
 
 ### model: Package with data models representing documents.
-- Check: Class representing receipt data.
+- Check: Class representing bill (check) data.
 - Invoice: Class representing invoice data.
 - Order: Class representing order data.
 
