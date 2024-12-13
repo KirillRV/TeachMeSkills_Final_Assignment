@@ -27,7 +27,7 @@ import static main.com.teachmeskills.final_assignment.storage.UserStorage.userDa
  *     <li>Generating QR codes for setting up two-factor authentication.</li>
  *     <li>Saving and loading session data to and from a file.</li>
  * </ul>
- *
+ * <p>
  * Key components of the class:
  * <ul>
  *     <li>User database (userDatabase): Contains demo user data for testing purposes.</li>
@@ -35,7 +35,7 @@ import static main.com.teachmeskills.final_assignment.storage.UserStorage.userDa
  *         generates QR codes, and validates OTP codes.</li>
  *     <li>Integration with utility classes and session management, particularly TFAUtils and SessionManager.</li>
  * </ul>
- *
+ * <p>
  * This class demonstrates examples of:
  * <ul>
  *     <li>Implementing security protocols using two-factor authentication.</li>
@@ -44,8 +44,8 @@ import static main.com.teachmeskills.final_assignment.storage.UserStorage.userDa
  * </ul>
  *
  * <p><b>Note:</b> This class includes examples and mock functionality for demonstration purposes.
- * @author Kirill R. and Vlad K.
  *
+ * @author Kirill R. and Vlad K.
  */
 public class AuthenticationService {
 
@@ -68,7 +68,7 @@ public class AuthenticationService {
     }
 
     private static void handleActiveSession(Scanner scanner, Session session) {
-        System.out.println("Session is active. Please enter the one-time password (OTP).\n");
+        System.out.println("Session is active.");
         if (validateOTP(scanner, session.getSecretKey())) {
             Logger.logFileInfo(1, "Successful login for user: " + session.getUsername());
             FileService.processFolder(scanner);
