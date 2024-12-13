@@ -7,7 +7,7 @@ This project is designed for processing financial documents (invoices, orders, a
 ## Main Features:
 
 - Authentication using login, password, and OTP.
-- Processing text files (invoices, orders, receipts).
+- Processing text files (invoices, orders, bills).
 - Generating turnover statistics.
 - Creating reports and uploading them to Amazon S3 cloud storage.
 - Logging errors and process-related information.
@@ -41,7 +41,7 @@ This project is designed for processing financial documents (invoices, orders, a
 - Logger: Class for logging messages to files.
 
 ### model: Package with data models representing documents.
-- Check: Class representing receipt data.
+- Check: Class representing bill (check) data.
 - Invoice: Class representing invoice data.
 - Order: Class representing order data.
 
@@ -52,5 +52,7 @@ This project is designed for processing financial documents (invoices, orders, a
 
 ### service: Utilities for handling files and folders.
 - FileService: Class for file operations, including validation, movement, and parsing.
+- AuthenticationService: Class for user authentication, session handling and OTP usage
 
-### MainRunner: Main class for managing the program's execution, initiating authentication, file processing, and report generation.
+### MainRunner: 
+- Main class for managing the program's execution, initiating authentication, file processing, and report generation.

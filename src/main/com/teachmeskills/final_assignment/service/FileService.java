@@ -1,11 +1,14 @@
 package main.com.teachmeskills.final_assignment.service;
 
+import main.com.teachmeskills.final_assignment.amazons3.AWSTesterS3;
 import main.com.teachmeskills.final_assignment.constant.Constants;
 import main.com.teachmeskills.final_assignment.fabric.ParserFabric;
 import main.com.teachmeskills.final_assignment.fileparser.*;
 import main.com.teachmeskills.final_assignment.fileparser.documentParser.*;
 import main.com.teachmeskills.final_assignment.logging.Logger;
-import main.com.teachmeskills.final_assignment.model.*;
+import main.com.teachmeskills.final_assignment.model.document.Check;
+import main.com.teachmeskills.final_assignment.model.document.Invoice;
+import main.com.teachmeskills.final_assignment.model.document.Order;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -48,11 +51,19 @@ import static main.com.teachmeskills.final_assignment.constant.Constants.*;
  */
 public class FileService {
 
-    public static void getFiles(String folderPath) {
+    public static void processFolder(Scanner scanner) {
+        System.out.println("Enter the path to the folder with files:");
+        String folderPath = scanner.nextLine();
+        FileService.getFiles(folderPath);
+        Logger.logFileInfo(1, "File processing completed.");
+    }
+
+    private static void getFiles(String folderPath) {
 
         try {
             if (folderPath == null || folderPath.trim().replaceAll(" ", "").isEmpty() || !Files.exists(Paths.get(folderPath))) {
                 Logger.logFileError("Invalid folder path provided: " + folderPath);
+                System.out.println("Invalid folder path provided. Application will be terminated.");
                 return;
             }
         } catch (Exception e) {
@@ -222,7 +233,7 @@ public class FileService {
         ensureDirectoryExists(Constants.PATH_TO_STATISTICS);
         Path statisticsDirectory = Paths.get(Constants.PATH_TO_STATISTICS);
 
-        Path outputPath = Paths.get(statisticsDirectory.toString(), "total_statistics.txt");
+        Path outputPath = Paths.get(statisticsDirectory.toString(), STATISTICS_FILE_NAME);
 
         List<String> stats = new ArrayList<>();
         totalAmounts.forEach((category, totalAmount) -> {
@@ -237,6 +248,7 @@ public class FileService {
             System.out.println("Statistic has been successfully created to path: " + outputPath);
             Logger.logFileInfo(1, "Statistic has been successfully created: "
                     + outputPath);
+            AWSTesterS3.uploadFileToAWS();
         } catch (IOException e) {
             Logger.logFileError("Error writing statistics " + e.getMessage());
         }

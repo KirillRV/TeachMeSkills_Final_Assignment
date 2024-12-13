@@ -1,8 +1,11 @@
 package main.com.teachmeskills.final_assignment.amazons3;
 
+import main.com.teachmeskills.final_assignment.util.PropertiesLoader;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -11,36 +14,37 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import java.io.File;
 import java.nio.file.Path;
 
-import static main.com.teachmeskills.final_assignment.constant.Constants.PATH_TO_STATISTICS;
+import static main.com.teachmeskills.final_assignment.constant.Constants.*;
 
 public class AWSTesterS3 {
- // TODO Vlad - сделать метод не main и вызвать его в processFolder методе после getFiles, также в проперти файл перенести все ключи и тд
-    public static void main(String[] args) {
-        String accessKey = "AKIAWQUOZ3GRVBUIJUIZ";
-        String secretKey = "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";
-        String bucketName = "reports-tms";
-        String regionName = "eu-north-1";
 
-        // TODO в кавычки вставить название файла с расширением
-        String key = "total_statistics.txt";
-        // TODO полный путь к файлу
-        File file = new File(PATH_TO_STATISTICS + key);
+    public static void uploadFileToAWS() {
+        try {
+            String accessKey = PropertiesLoader.loadProperties().getProperty("s3.accessKey");
+            String secretKey = PropertiesLoader.loadProperties().getProperty("s3.secretKey");
+            String bucketName = PropertiesLoader.loadProperties().getProperty("s3.bucketName");
+            String regionName = PropertiesLoader.loadProperties().getProperty("s3.region");
 
-        AwsCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
+            String key = STATISTICS_FILE_NAME;
+            File file = new File(PATH_TO_STATISTICS + key);
 
-        S3Client s3Client = S3Client
-                .builder()
-                .region(Region.of(regionName))
-                .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .build();
+            AwsCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 
-        PutObjectRequest request = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
+            S3Client s3Client = S3Client
+                    .builder()
+                    .region(Region.of(regionName))
+                    .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                    .build();
 
-        PutObjectResponse response = s3Client.putObject(request, Path.of(file.toURI()) );
-        System.out.println(response.eTag());
+            PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            PutObjectResponse response = s3Client.putObject(request, Path.of(file.toURI()));
+            System.out.println(response.eTag());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-
 }
