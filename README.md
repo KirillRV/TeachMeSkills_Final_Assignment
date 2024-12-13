@@ -1,58 +1,151 @@
 # TeachMeSkills_Final_Assignment
 
-## General Description:
+## General Information About the Program
 
-This project is designed for processing financial documents (invoices, orders, and receipts), analyzing text files, calculating total turnover, and generating reports. The program supports two-factor authentication (TFA) using OTP and QR codes and integrates with Amazon S3 for uploading statistics.
+### Code Description:
 
-## Main Features:
+The program is designed for processing financial documents (invoices, receipts, orders) with the following capabilities:
 
-- Authentication using login, password, and OTP.
-- Processing text files (invoices, orders, bills).
-- Generating turnover statistics.
-- Creating reports and uploading them to Amazon S3 cloud storage.
-- Logging errors and process-related information.
+User Authentication with two-factor authentication (QR codes and one-time passwords).
 
-## Project Structure:
+File Processing including validation, classification, and statistics generation.
 
-### authentication: Package for authentication and two-factor authentication.
-- AuthenticationService: Service for login and OTP verification.
-- TFAUtils: Utility classes for generating secret keys and QR codes.
-- User: Class representing a user.
+Uploading final statistics to Amazon S3.
 
-### constant: Package for storing constants.
-- Constants: Class for storing all constants (e.g., folder paths, file formats, string templates, etc.).
+Logging (error and informational messages).
 
-### exception: Package for custom exceptions.
-- AuthenticationException: Exception for handling authentication errors.
+## Project Structure
 
-### fabric: Package for creating parsers through a factory.
-- ParserFabric: Factory for creating parsers depending on the document type.
+### Main Packages and Classes:
 
-### fileparser: Package for parsing financial documents.
-- Parser: Interface for parsers.
-- BaseParser: Abstract class for basic parsing operations.
+#### amazons3:
 
-### documentParser: Package for specific document parsers.
-- CheckParser: Parser for receipts.
-- InvoiceParser: Parser for invoices.
-- OrderParser: Parser for orders.
+AWSTesterS3 – class for uploading statistics to Amazon S3 cloud storage.
 
-### logging: Package for logging information and errors.
-- Logger: Class for logging messages to files.
+#### authentication:
 
-### model: Package with data models representing documents.
-- Check: Class representing bill (check) data.
-- Invoice: Class representing invoice data.
-- Order: Class representing order data.
+TFAUtils – utility class for working with two-factor authentication.
 
-### session: Package for managing user sessions.
-- SessionManager: Session manager for active sessions.
-- Session: Class representing a user session.
-- PropertiesLoader: Class for loading configurations from a file.
+#### constant:
 
-### service: Utilities for handling files and folders.
-- FileService: Class for file operations, including validation, movement, and parsing.
-- AuthenticationService: Class for user authentication, session handling and OTP usage
+Constants – interface containing constants for settings and paths.
 
-### MainRunner: 
-- Main class for managing the program's execution, initiating authentication, file processing, and report generation.
+#### exception:
+
+AuthenticationException – exception class for handling authentication errors.
+
+#### fabric:
+
+ParserFabric – factory for creating document parsers.
+
+#### fileparser:
+
+BaseParser and Parser – base classes and interface for file processing.
+
+The documentParser sub-package contains specific parsers: CheckParser, InvoiceParser, OrderParser.
+
+#### logging:
+
+Logger – class for logging program actions.
+
+#### model:
+
+document sub-package contains document models: Check, Invoice, Order.
+
+session sub-package contains the Session class for managing user sessions.
+
+user sub-package contains the User class for representing users.
+
+#### service:
+
+AuthenticationService – service for user authentication.
+
+FileService – service for file processing and statistics generation.
+
+#### session:
+
+SessionManager – class for managing user sessions.
+
+#### storage:
+
+UserStorage – class for storing user information.
+
+#### util:
+
+PropertiesLoader – utility for loading settings from a configuration file.
+
+#### Configuration File:
+
+config.properties – contains settings for Amazon S3 and session duration.
+
+#### Entry Point:
+
+MainRunner – class with the main method for launching authentication and subsequent file processing.
+
+## Instructions for Running
+
+### Project Setup:
+
+Make sure you have Java (JDK 11 or higher) and Maven installed.
+
+Download or clone the project repository.
+
+### Environment Setup:
+
+Install dependencies using Maven:
+
+bash
+mvn clean install
+Configure the config.properties file in the src/main/resources directory, specifying:
+
+s3.accessKey — AWS access key.
+s3.secretKey — AWS secret key.
+s3.bucketName — your AWS S3 bucket name.
+s3.region — your bucket's region..
+
+### Running the Program:
+
+Run the program with the following command:
+
+bash
+java -cp target/your-jar-file.jar main.com.teachmeskills.final_assignment.MainRunner
+
+## Testing Instructions
+
+### Test Scenarios:
+
+est authentication with correct and incorrect login/password combinations.
+
+Scan the QR code and enter the OTP.
+
+Create test files with correct and incorrect names/data.
+
+Place files in directories: checks, orders, invoices, or unauthorized directories.
+
+Verify the correct classification and processing of files.
+
+### Expected Results:
+
+Error logs are saved in logs/error_log.txt.
+
+Informational logs are saved in logs/info_log.txt.
+
+The final statistics file is created in statistics/total_statistics.txt.
+
+Files are uploaded to Amazon S3.
+
+
+## Diagrams:
+
+### Solution Diagram
+
+![Solution Diagram](pictures/SolutionDiagram.png)
+
+### Class Diagram
+
+![Class Diagram](pictures/ClassDiagram.png)
+
+### Sequence Diagram
+
+![Sequence Diagram](pictures/SequenceDiagram.png)
+
