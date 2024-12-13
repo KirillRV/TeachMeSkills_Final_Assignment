@@ -139,13 +139,13 @@ Files are uploaded to Amazon S3.
 
 ### Solution Diagram
 
-![Solution Diagram](pictures/SolutionDiagram.png)
+![Solution Diagram](diagrams/SolutionDiagram.png)
 
 ### Class Diagram
 
-![Class Diagram](pictures/ClassDiagram.png)
+![Class Diagram](diagrams/ClassDiagram.png)
 
 ### Sequence Diagram
 
-![Sequence Diagram](pictures/SequenceDiagram.png)
+![Sequence Diagram](diagrams/SequenceDiagram.jpg)
 
