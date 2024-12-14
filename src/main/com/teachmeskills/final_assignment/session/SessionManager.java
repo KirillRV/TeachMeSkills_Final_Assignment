@@ -29,10 +29,6 @@ public class SessionManager {
         return session != null && !session.isExpired();
     }
 
-    public static void endSession(String username) {
-        activeSessions.remove(username);
-    }
-
     public static Session getSession(String username) {
         return activeSessions.get(username);
     }
