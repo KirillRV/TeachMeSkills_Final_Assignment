@@ -79,6 +79,7 @@ public class AuthenticationService {
     }
 
     private static void handleLoginProcess(Scanner scanner) {
+        Session currentSession = loadSessionData();
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
 
@@ -88,20 +89,32 @@ public class AuthenticationService {
         try {
             if (authenticateUser(username, password)) {
                 User user = userDatabase.get(username);
-                if (SessionManager.getSession(username) == null) {
+                if (currentSession == null) {
                     generateQRCodeForUser(username, user);
                 }
 
-                if (validateOTP(scanner, user.getSecretKey())) {
-                    Logger.logFileInfo(1, "Authentication successful for user: " + username);
-                    SessionManager.createSession(username, user.getSecretKey());
-                    saveSessionData(username, user.getSecretKey());
-                    FileService.processFolder(scanner);
-                } else {
-                    throw new AuthenticationException("Invalid OTP.");
+                if (SessionManager.getSession(username) == null) {
+                    if (validateOTP(scanner, user.getSecretKey())) {
+                        Logger.logFileInfo(1, "Authentication successful for user: " + username);
+                        SessionManager.createSession(username, user.getSecretKey());
+                        saveSessionData(username, user.getSecretKey());
+                        FileService.processFolder(scanner);
+                    } else {
+                        throw new AuthenticationException("Invalid OTP.");
+                    }
+                } else if (SessionManager.getSession(username) != null && SessionManager.getSession(username).isExpired()) {
+                    if (validateOTP(scanner, currentSession.getSecretKey())) {
+                        Logger.logFileInfo(1, "Authentication successful for user: " + username);
+                        SessionManager.removeSession(username);
+                        SessionManager.createSession(username, user.getSecretKey());
+                        saveSessionData(username, user.getSecretKey());
+                        FileService.processFolder(scanner);
+                    } else {
+                        throw new AuthenticationException("Invalid OTP.");
+                    }
                 }
             }
-        } catch (IOException | WriterException | AuthenticationException e) {
+        } catch (IOException | WriterException | AuthenticationException | NullPointerException e) {
             Logger.logFileError("Error during login: " + e.getMessage());
             System.out.println(e.getMessage());
         }
@@ -144,6 +157,11 @@ public class AuthenticationService {
                 if (expiryTime.isAfter(LocalDateTime.now())) {
                     SessionManager.createSession(username, secretKey, (int) java.time.Duration.between(LocalDateTime.now(), expiryTime).toMinutes());
                     return SessionManager.getSession(username);
+                } else if (expiryTime.isBefore(LocalDateTime.now())) {
+                    SessionManager.createSession(username, secretKey, expiryTime);
+                    return SessionManager.getSession(username);
+                } else {
+                    Logger.logFileError("Invalid session data.");
                 }
             }
         } catch (IOException e) {

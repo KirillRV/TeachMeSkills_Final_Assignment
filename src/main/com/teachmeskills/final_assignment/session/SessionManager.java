@@ -20,17 +20,21 @@ public class SessionManager {
         activeSessions.put(username, new Session(username, secretKey, expiryTime));
     }
 
+    public static void createSession(String username, String secretKey, LocalDateTime expiryTime) {
+        activeSessions.put(username, new Session(username, secretKey, expiryTime));
+    }
+
     public static boolean isSessionActive(String username) {
         Session session = activeSessions.get(username);
         return session != null && !session.isExpired();
     }
 
-    public static void endSession(String username) {
-        activeSessions.remove(username);
-    }
-
     public static Session getSession(String username) {
         return activeSessions.get(username);
+    }
+
+    public static void removeSession(String username) {
+        activeSessions.remove(username);
     }
 }
 
