@@ -248,7 +248,7 @@ public class FileService {
             System.out.println("Statistic has been successfully created to path: " + outputPath);
             Logger.logFileInfo(1, "Statistic has been successfully created: "
                     + outputPath);
-            AWSTesterS3.uploadFileToAWS();
+            //AWSTesterS3.uploadFileToAWS();
         } catch (IOException e) {
             Logger.logFileError("Error writing statistics " + e.getMessage());
         }
